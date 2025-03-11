@@ -1,0 +1,60 @@
+@page "/Authentication/register"
+
+<div class="container-fluid mt-5 p-5">
+    <div class="row">
+        <div class="col-lg-4 offset-4">
+            <EditForm Model="NewUser" OnValidSubmit="RegisterUser">
+                <DataAnnotationsValidator />
+                @if (!string.IsNullOrEmpty(Message))
+                {
+                <div class="alert alert-@AlertType">@Message</div>
+                }
+                <div class="card p-4">
+                    <div class="card-body">
+                        <div class="form-group">
+                            <FloatingText @bind-Value="NewUser.FullName" class="form-control" Label="Full Name" Placeholder="Ahmed Zaki" />
+                            <ValidationMessage For="() => NewUser.FullName" />
+                        </div>
+                        <div class="form-group">
+                            <FloatingText @bind-Value="NewUser.Email" class="form-control" Label="Email Address" Placeholder="Example@gmail.com" />
+                            <ValidationMessage For="() => NewUser.Email" />
+                        </div>
+                        <div class="form-group">
+                            <FloatingText @bind-Value="NewUser.Password" class="form-control" Label="Password" Type="password" />
+                            <ValidationMessage For="() => NewUser.Password" />
+                        </div>
+                        <div class="form-group">
+                            <FloatingText @bind-Value="NewUser.ConfirmPassword" class="form-control" Label="Confirm Password" Type="password" />
+                            <ValidationMessage For="() => NewUser.ConfirmPassword" />
+                        </div>
+                        <button class="btn btn-primary" type="submit">Register</button>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+string AlertType = string.Empty;
+string Message = string.Empty;
+public CreateUser NewUser { get; set; } = new();
+
+public async Task RegisterUser()
+{
+AlertType = string.Empty;
+Message = string.Empty;
+var result = await authenticationService.CreateUser(NewUser);
+if (!result.IsSuccess)
+{
+AlertType = "danger";
+Message = result.Message;
+}
+else
+{
+AlertType = "success";
+Message = "Registration successful!";
+NavManager.NavigateTo("/Authentication/login", true);
+}
+}
+}
